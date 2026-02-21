@@ -5,7 +5,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Register EF Core using the "db" connection string from appsettings.json
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("db")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("db"),
+        sqlOptions => sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 3,
+            maxRetryDelay: TimeSpan.FromSeconds(5),
+            errorNumbersToAdd: null)));
 
 builder.Services.AddControllersWithViews();
 
